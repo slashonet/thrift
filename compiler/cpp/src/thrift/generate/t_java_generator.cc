@@ -1426,6 +1426,14 @@ void t_java_generator::generate_java_struct_definition(ostream& out,
   if (is_deprecated) {
     indent(out) << "@Deprecated" << endl;
   }
+
+  std::string typeAnnotations = "";
+  std::map<string, string>::iterator typeAnnotationsIter = tstruct->annotations_.find("java.annotations");
+  if (typeAnnotationsIter != tstruct->annotations_.end()) {
+    typeAnnotations = typeAnnotationsIter->second;
+   }
+
+  indent(out) << typeAnnotations << endl;
   indent(out) << "public " << (is_final ? "final " : "") << (in_class ? "static " : "") << "class "
               << tstruct->get_name() << " ";
 
@@ -1460,6 +1468,14 @@ void t_java_generator::generate_java_struct_definition(ostream& out,
   out << endl;
 
   for (m_iter = members.begin(); m_iter != members.end(); ++m_iter) {
+
+    std::map<string, string>::iterator annotIter = (*m_iter)->annotations_.find("java.annotations");
+    std::string annotations = "";
+    if (annotIter != (*m_iter)->annotations_.end()) {
+      annotations = annotIter->second;
+    }
+
+    indent(out) << annotations << endl;
     if (bean_style_ || private_members_) {
       indent(out) << "private ";
     } else {
