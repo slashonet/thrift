@@ -1436,8 +1436,20 @@ void t_java_generator::generate_java_struct_definition(ostream& out,
   if (typeAnnotationsIter != tstruct->annotations_.end()) {
     typeAnnotations = typeAnnotationsIter->second;
    }
-
   indent(out) << typeAnnotations << endl;
+
+  std::string typeImplements = "";
+  std::map<string, string>::iterator typeImplementsIter = tstruct->annotations_.find("java.implements");
+  if (typeImplementsIter != tstruct->annotations_.end()) {
+    typeImplements = "," + typeImplementsIter->second;
+  }
+
+  std::string typeExtends = "";
+  std::map<string, string>::iterator typeExtendsIter = tstruct->annotations_.find("java.extends");
+  if (typeExtendsIter != tstruct->annotations_.end()) {
+    typeExtends = "," + typeExtendsIter->second;
+  }
+
   indent(out) << "public " << (is_final ? "final " : "") << (in_class ? "static " : "") << "class "
               << tstruct->get_name() << " ";
 
@@ -1445,7 +1457,7 @@ void t_java_generator::generate_java_struct_definition(ostream& out,
     out << "extends org.apache.thrift.TException ";
   }
   out << "implements org.apache.thrift.TBase<" << tstruct->get_name() << ", " << tstruct->get_name()
-      << "._Fields>, java.io.Serializable, Cloneable, Comparable<" << tstruct->get_name() << ">";
+      << "._Fields>, java.io.Serializable, Cloneable, Comparable<" << tstruct->get_name() << ">" << typeImplements;
 
   if (android_style_) {
     out << ", android.os.Parcelable";
