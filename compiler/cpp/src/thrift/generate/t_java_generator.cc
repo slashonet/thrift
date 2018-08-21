@@ -72,6 +72,7 @@ public:
     undated_generated_annotations_  = false;
     suppress_generated_annotations_ = false;
     rethrow_unhandled_exceptions_ = false;
+    add_jsonignore_annotations_ = false;
     unsafe_binaries_ = false;
     for( iter = parsed_options.begin(); iter != parsed_options.end(); ++iter) {
       if( iter->first.compare("beans") == 0) {
@@ -106,6 +107,8 @@ public:
         }
       } else if( iter->first.compare("unsafe_binaries") == 0) {
         unsafe_binaries_ = true;
+      } else if( iter->first.compare("jsonignore") == 0) {
+        add_jsonignore_annotations_ = true;
       } else {
         throw "unknown option java:" + iter->first;
       }
@@ -415,6 +418,7 @@ private:
   bool suppress_generated_annotations_;
   bool rethrow_unhandled_exceptions_;
   bool unsafe_binaries_;
+  bool add_jsonignore_annotations_;
 
 };
 
@@ -2331,6 +2335,11 @@ void t_java_generator::generate_java_bean_boilerplate(ostream& out, t_struct* ts
         if (is_deprecated) {
           indent(out) << "@Deprecated" << endl;
         }
+
+        if (add_jsonignore_annotations_) {
+          indent(out) << "@com.fasterxml.jackson.annotation.JsonIgnore" << endl;
+        }
+
         indent(out) << "public int get" << cap_name;
         out << get_cap_name("size() {") << endl;
 
@@ -2355,6 +2364,10 @@ void t_java_generator::generate_java_bean_boilerplate(ostream& out, t_struct* ts
         if (is_deprecated) {
           indent(out) << "@Deprecated" << endl;
         }
+
+        if (add_jsonignore_annotations_) {
+          indent(out) << "@com.fasterxml.jackson.annotation.JsonIgnore" << endl;
+        }
         indent(out) << "public org.apache.thrift.Option<java.util.Iterator<" << type_name(element_type, true, false)
                     << ">> get" << cap_name;
         out << get_cap_name("iterator() {") << endl;
@@ -2375,6 +2388,11 @@ void t_java_generator::generate_java_bean_boilerplate(ostream& out, t_struct* ts
         if (is_deprecated) {
           indent(out) << "@Deprecated" << endl;
         }
+
+        if (add_jsonignore_annotations_) {
+          indent(out) << "@com.fasterxml.jackson.annotation.JsonIgnore" << endl;
+        }
+
         indent(out) << java_nullable_annotation() << endl;
         indent(out) << "public java.util.Iterator<" << type_name(element_type, true, false)
                     << "> get" << cap_name;
@@ -5457,4 +5475,5 @@ THRIFT_REGISTER_GENERATOR(
     "    generated_annotations=[undated|suppress]:\n"
     "                     undated: suppress the date at @Generated annotations\n"
     "                     suppress: suppress @Generated annotations entirely\n"
-    "    unsafe_binaries: Do not copy ByteBuffers in constructors, getters, and setters.\n")
+    "    unsafe_binaries: Do not copy ByteBuffers in constructors, getters, and setters.\n"
+    "    jsonignore:         Add @JsonIgnore annotations to the meta getters.\n")
