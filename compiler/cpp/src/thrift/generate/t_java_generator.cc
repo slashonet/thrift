@@ -2282,6 +2282,9 @@ void t_java_generator::generate_generic_isset_method(std::ostream& out, t_struct
   // create the isSet method
   indent(out) << "/** Returns true if field corresponding to fieldID is set (has been assigned a "
                  "value) and false otherwise */" << endl;
+  if (add_jsonignore_annotations_) {
+          indent(out) << "@com.fasterxml.jackson.annotation.JsonIgnore" << endl;
+  }
   indent(out) << "public boolean isSet(_Fields field) {" << endl;
   indent_up();
   indent(out) << "if (field == null) {" << endl;
@@ -2592,6 +2595,10 @@ void t_java_generator::generate_java_bean_boilerplate(ostream& out, t_struct* ts
     if (is_deprecated) {
       indent(out) << "@Deprecated" << endl;
     }
+
+    if (add_jsonignore_annotations_) {
+          indent(out) << "@com.fasterxml.jackson.annotation.JsonIgnore" << endl;
+    }
     indent(out) << "public void unset" << cap_name << "() {" << endl;
     indent_up();
     if (type_can_be_null(type)) {
@@ -2611,6 +2618,9 @@ void t_java_generator::generate_java_bean_boilerplate(ostream& out, t_struct* ts
     if (is_deprecated) {
       indent(out) << "@Deprecated" << endl;
     }
+    if (add_jsonignore_annotations_) {
+          indent(out) << "@com.fasterxml.jackson.annotation.JsonIgnore" << endl;
+    }
     indent(out) << "public boolean is" << get_cap_name("set") << cap_name << "() {" << endl;
     indent_up();
     if (type_can_be_null(type)) {
@@ -2626,6 +2636,10 @@ void t_java_generator::generate_java_bean_boilerplate(ostream& out, t_struct* ts
 
     if (is_deprecated) {
       indent(out) << "@Deprecated" << endl;
+    }
+
+    if (add_jsonignore_annotations_) {
+          indent(out) << "@com.fasterxml.jackson.annotation.JsonIgnore" << endl;
     }
     indent(out) << "public void set" << cap_name << get_cap_name("isSet") << "(boolean value) {"
                 << endl;
