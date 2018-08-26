@@ -109,6 +109,8 @@ public:
         unsafe_binaries_ = true;
       } else if( iter->first.compare("jsonignore") == 0) {
         add_jsonignore_annotations_ = true;
+      } else if ( iter->first.compare("jpa") == 0) {
+        add_jpa_annotations_ = true;
       } else {
         throw "unknown option java:" + iter->first;
       }
@@ -419,6 +421,7 @@ private:
   bool rethrow_unhandled_exceptions_;
   bool unsafe_binaries_;
   bool add_jsonignore_annotations_;
+  bool add_jpa_annotations_;
 
 };
 
@@ -1533,9 +1536,15 @@ void t_java_generator::generate_java_struct_definition(ostream& out,
     case ISSET_NONE:
       break;
     case ISSET_PRIMITIVE:
+      if (add_jpa_annotations_) {
+        indent(out) << "@javax.persistence.Transient" << endl;
+      }
       indent(out) << "private " << primitiveType << " __isset_bitfield = 0;" << endl;
       break;
     case ISSET_BITSET:
+      if (add_jpa_annotations_) {
+        indent(out) << "@javax.persistence.Transient" << endl;
+      }
       indent(out) << "private java.util.BitSet __isset_bit_vector = new java.util.BitSet(" << i << ");" << endl;
       break;
     }
@@ -5502,4 +5511,5 @@ THRIFT_REGISTER_GENERATOR(
     "                     undated: suppress the date at @Generated annotations\n"
     "                     suppress: suppress @Generated annotations entirely\n"
     "    unsafe_binaries: Do not copy ByteBuffers in constructors, getters, and setters.\n"
-    "    jsonignore:         Add @JsonIgnore annotations to the meta getters.\n")
+    "    jsonignore:         Add @JsonIgnore annotations to the meta getters.\n"
+    "    jpa:         Add JPA Related annotations to ignore _isset fields \n")
